@@ -1,0 +1,12 @@
+﻿@page "/"
+
+<AuthorizeView>
+    <Authorized>
+        <h1>Hi, @context.User.Identity.Name. Welcome back!</h1>
+        Let's admire <a href="army">your beloved army</a>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Welcome to Gergo's demo page!</h1>
+        <Login></Login>
+    </NotAuthorized>
+</AuthorizeView>

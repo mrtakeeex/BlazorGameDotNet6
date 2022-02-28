@@ -1,0 +1,36 @@
+﻿@using BlazorGameDotNet6.Client.Services
+@inject IBananaService BananaService;
+@implements IDisposable
+
+<!--only show this content to authorized users-->
+<AuthorizeView>
+    
+    <Authorized>
+        <div class="top-menu">
+            <img src="icons/I_C_Banana.png" /> <span> @BananaService.Bananas </span>
+            <AddBananas />
+        </div>
+    </Authorized>
+    
+    <NotAuthorized>
+        <div>
+            <NavLink href="">Login</NavLink> | 
+            <NavLink href="register">Register</NavLink>
+        </div>
+    </NotAuthorized>
+
+</AuthorizeView>
+
+@code {
+    protected override void OnInitialized()
+    {
+        BananaService.OnChange += StateHasChanged; 
+        // Onchange invokes, when Bananas count changed. 
+        //Therefore we need to subscribe to that event and call StateHasChanged, which will re-render the count on the UI
+    }
+
+    public void Dispose()
+    {
+        BananaService.OnChange -= StateHasChanged;
+    }
+}
