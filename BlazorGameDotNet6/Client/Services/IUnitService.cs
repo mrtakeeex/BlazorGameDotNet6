@@ -7,4 +7,5 @@ public interface IUnitService
     Task AddUnit(int unitId);
     Task LoadUnitsAsync();
     Task LoadUserUnitsAsync();
+    Task ReviveArmy();
 }

@@ -45,4 +45,21 @@ public class UnitService : IUnitService
     {
         MyUnits = await _client.GetFromJsonAsync<IList<UserUnit>>("api/userunit");
     }
+
+    public async Task ReviveArmy()
+    {
+        var result = await _client.PostAsJsonAsync<string>("api/userunit/revive", null);
+        
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            _toastService.ShowSuccess(await result.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            _toastService.ShowError(await result.Content.ReadAsStringAsync());
+        }
+
+        await LoadUserUnitsAsync();
+        await _bananaService.GetBananas();
+    }
 }

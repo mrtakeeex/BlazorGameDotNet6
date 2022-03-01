@@ -14,6 +14,46 @@ public class UserUnitController : ControllerBase
         _utilityService = utilityService;
     }
 
+    [HttpPost("revive")]
+    public async Task<IActionResult> ReviveArmy()
+    {
+        var user = await _utilityService.GetCurrentUser();
+        var userUnits = await _context.UserUnits
+            .Where(unit => unit.UserId == user.Id)
+            .Include(unit => unit.Unit)
+            .ToListAsync();
+
+        var bananaCost = 1000;
+
+        if (user.Bananas < bananaCost)
+        {
+            return BadRequest($"Not enough bananas! You need {bananaCost} bananas to revive your army.");
+        }
+
+        var armyAlreadyAlive = true;
+        foreach (var userUnit in userUnits)
+        {
+            if (userUnit.HitPoints <= 0)
+            {
+                armyAlreadyAlive = false;
+                
+                // revive unit with random hitpoints
+                userUnit.HitPoints = new Random().Next(0, userUnit.HitPoints); 
+            }
+        }
+
+        if (armyAlreadyAlive)
+        {
+            return Ok("Your army is already alive.");
+        }
+
+        user.Bananas -= bananaCost;
+
+        await _context.SaveChangesAsync();
+
+        return Ok("Army revived!");
+    }
+
     [HttpPost]
     public async Task<IActionResult> BuildUserUnit([FromBody] int unitId)
     {
@@ -49,7 +89,7 @@ public class UserUnitController : ControllerBase
         var response = userUnits.Select(
             userUnit => new UserUnitResponse
             {
-                UnitId = userUnit.Id,
+                UnitId = userUnit.UnitId,
                 HitPoints = userUnit.HitPoints
             });
 

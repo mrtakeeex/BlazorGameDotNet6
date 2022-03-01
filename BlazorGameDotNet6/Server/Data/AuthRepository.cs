@@ -27,16 +27,21 @@ public class AuthRepository : IAuthRepository
         }
         else
         {
+            response.Success = true;
             response.Data = CreateToken(user);
         }
         return response;
     }
 
-    public async Task<ServiceResponse<int>> Register(User user, string password)
+    public async Task<ServiceResponse<int>> Register(User user, string password, int startUnitId)
     {
-        if (await UserExists(user.Email))
+        if (await EmailExists(user.Email))
         {
-            return new ServiceResponse<int> { Success = false, Message = "User already exists." };
+            return new ServiceResponse<int> { Success = false, Message = "User with that email already exists." };
+        }
+        if (await UsernameExists(user.Username))
+        {
+            return new ServiceResponse<int> { Success = false, Message = "User with that name already exists." };
         }
 
         CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -47,12 +52,34 @@ public class AuthRepository : IAuthRepository
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        return new ServiceResponse<int> { Data = user.Id, Message = "Registration successful." };
+        await AddStartingUnit(user, startUnitId);
+
+        return new ServiceResponse<int> { Success = true, Data = user.Id, Message = "Registration successful." };
     }
 
-    public async Task<bool> UserExists(string email)
+    private async Task AddStartingUnit(User user, int startUnitId)
+    {
+        //var unit = await _context.Units.FindAsync(startUnitId);
+        //var unit = await _context.Units.FirstOrDefaultAsync<Unit>(u => u.Id == startUnitId);
+        var unit = await _context.Units.FindAsync(startUnitId);
+        _context.UserUnits.Add(new UserUnit
+        {
+            UnitId = unit!.Id, // 'units' table is handled by admin, therefore we can presume the record exists
+            UserId = user.Id,
+            HitPoints = unit.HitPoints,
+        });
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> EmailExists(string email)
     {
         return await _context.Users.AnyAsync(s => s.Email.ToLower().Equals(email.ToLower()));
+    }
+
+    public async Task<bool> UsernameExists(string username)
+    {
+        return await _context.Users.AnyAsync(s => s.Username.ToLower().Equals(username.ToLower()));
     }
 
     private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

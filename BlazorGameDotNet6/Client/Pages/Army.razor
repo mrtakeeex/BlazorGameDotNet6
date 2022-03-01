@@ -15,13 +15,13 @@
                 <div>
                     @switch (userUnit.UnitId)
                     {
-                        case 1:
+                        case (int) UnitTypeEnum.Knight:
                             <img src="icons/W_Sword006.png" />
                             break;
-                        case 2:
+                        case (int) UnitTypeEnum.Archer:
                             <img src="icons/S_Bow08.png" />
                             break;
-                        case 3:
+                        case (int) UnitTypeEnum.Mage:
                             <img src="icons/C_Hat01.png" />
                             break;
                     }
@@ -32,9 +32,15 @@
                 <div>
                     @userUnit.HitPoints HP
                 </div>
+                <div>
+                    <button class="btn btn-danger" />
+                </div>
             </div>
         }
     </table>
+    <center>
+        <button class="btn btn-warning" @onclick="ReviveArmy">Revive your army for 1000 bananas</button>
+    </center>
 }
 else
 {
@@ -45,5 +51,10 @@ else
     {
         await UnitService.LoadUnitsAsync();
         await UnitService.LoadUserUnitsAsync();
+    }
+
+    private async Task ReviveArmy()
+    {
+        await UnitService.ReviveArmy();
     }
 }

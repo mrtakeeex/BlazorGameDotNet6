@@ -12,3 +12,6 @@ global using BlazorGameDotNet6.Server.Services;
 global using System.IdentityModel.Tokens.Jwt;
 global using System.Security.Claims;
 global using System.Security.Cryptography;
+
+global using Serilog;
+

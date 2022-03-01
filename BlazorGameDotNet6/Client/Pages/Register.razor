@@ -15,7 +15,7 @@
         <ValidationMessage For=@(() => user.Email) />
     </div>
     <div class="form-group">
-        <label for="username">Username</label>
+        <label for="username" class="required">Username</label>
         <InputText id="username" @bind-Value="user.Username" class="form-control" />
         <ValidationMessage For=@(() => user.Username) />
     </div>
@@ -40,19 +40,19 @@
     </div>
     <div class="form-group">
         <label for="startUnitId">Start Unit</label>
-        @*<InputSelect id="startUnitId" @bind-Value="user.StartUnitId" class="form-control">
+        <InputSelect id="startUnitId" @bind-Value="user.StartUnitId" class="form-control">
             @foreach(var unit in UnitService.Units)
             {
-                <option value="@unit.Id.ToString()">@unit.Title</option>
+                <option value="@unit.Id.ToString()">@unit.Title - Attack: @unit.Attack, Defense: @unit.Defense </option>
             }
-        </InputSelect>*@
+        </InputSelect>
         <br />
-        <InputRadioGroup id="startUnitId" @bind-Value="user.StartUnitId" class="form-control">
+        @*<InputRadioGroup id="startUnitId" @bind-Value="user.StartUnitId" class="form-control">
             @foreach(var unit in UnitService.Units)
             {
                 <InputRadio Value="@unit.Id.ToString()" /><span style="padding-left: 5px">@unit.Title</span><br/>
             }
-        </InputRadioGroup>
+        </InputRadioGroup>*@
     </div>
     <div class="form-group">
         <label for="dateOfBirth">Date of Birth</label>

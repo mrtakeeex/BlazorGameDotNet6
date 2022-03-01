@@ -15,10 +15,7 @@ public class UnitController : ControllerBase
     {
         var units = await _context.Units.ToListAsync();
 
-        return Ok(units); // Status code: 200
-        
-        //return BadRequest();
-        //return NotFound();
+        return Ok(units);
     }
 
     [HttpPost("AddUnit")]

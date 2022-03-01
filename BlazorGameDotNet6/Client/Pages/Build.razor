@@ -12,7 +12,7 @@
     <select @bind="selectedUnitId" class="form-control">
         @foreach (var unit in UnitService.Units)
         {
-            <option value="@unit.Id">@unit.Title // @unit.BananaCost Bananas </option>
+            <option value="@unit.Id">@unit.Title (Attack: @unit.Attack, Defense: @unit.Defense) - Price: @unit.BananaCost Bananas </option>
         }
     </select>
 </div>
