@@ -1,6 +1,6 @@
 ﻿namespace BlazorGameDotNet6.Server.Controllers;
 
-[Route("api/[controller]")]
+[Route(Constants.API + "/[controller]")]
 [ApiController]
 public class UnitController : ControllerBase
 {
@@ -16,15 +16,6 @@ public class UnitController : ControllerBase
         var units = await _context.Units.ToListAsync();
 
         return Ok(units);
-    }
-
-    [HttpPost("AddUnit")]
-    public async Task<IActionResult> AddUnit(Unit unit)
-    {
-        _context.Units.Add(unit);
-        await _context.SaveChangesAsync();
-        
-        return Ok(await _context.Units.ToListAsync());
     }
 
     [HttpPut("{id}")]

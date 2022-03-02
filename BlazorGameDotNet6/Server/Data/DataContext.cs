@@ -7,11 +7,7 @@ public class DataContext : DbContext
     public DbSet<UserUnit> UserUnits { get; set; }
     public DbSet<Battle> Battles { get; set; }
 
-    // Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;
-    public DataContext(DbContextOptions<DataContext> options) : base(options)
-    {
-
-    }
+    public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
     // fluent api
     protected override void OnModelCreating(ModelBuilder modelBuilder)

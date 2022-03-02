@@ -4,7 +4,7 @@ public class UserUnit
 {
     public int Id { get; set; }
     public int UserId { get; set; }
-    public Unit Unit { get; set; }
+    public Unit Unit { get; set; } = null!;
     public int UnitId { get; set; }
     public int HitPoints { get; set; }
     public int CurrentValue { get; set; }

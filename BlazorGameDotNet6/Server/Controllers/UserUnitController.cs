@@ -1,6 +1,6 @@
 ﻿namespace BlazorGameDotNet6.Server.Controllers;
 
-[Route("api/[controller]")]
+[Route(Constants.API + "/[controller]")]
 [ApiController]
 [Authorize]
 public class UserUnitController : ControllerBase
@@ -14,7 +14,7 @@ public class UserUnitController : ControllerBase
         _utilityService = utilityService;
     }
 
-    [HttpPost("revive")]
+    [HttpPost(Constants.ApiRoute.Revive)]
     public async Task<IActionResult> ReviveArmy()
     {
         var user = await _utilityService.GetCurrentUser();
@@ -112,15 +112,13 @@ public class UserUnitController : ControllerBase
             return NotFound($"UserUnit with id {id} was not found");
         }
 
-        var responseMsg = $"Unit was deleted successfully!";
+        var responseMsg = "Unit was deleted successfully!";
 
         if (userUnit.HitPoints > 0)
         {
             // Sell
             var user = await _context.Users.FindAsync(userUnit.UserId);
-
             user!.Coins += userUnit.CurrentValue;
-
             responseMsg = $"Unit was sold for {userUnit.CurrentValue} coins!";
         }
         

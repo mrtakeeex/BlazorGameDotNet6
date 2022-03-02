@@ -1,6 +1,6 @@
 ﻿namespace BlazorGameDotNet6.Server.Controllers;
 
-[Route("api/[controller]")]
+[Route(Constants.API + "/[controller]")]
 [ApiController]
 [Authorize]
 public class BattleController : ControllerBase
@@ -14,7 +14,7 @@ public class BattleController : ControllerBase
         _utilityService = utilityService;
     }
 
-    [HttpGet("history")]
+    [HttpGet(Constants.ApiRoute.History)]
     public async Task<IActionResult> GetBattleHistory()
     {
         var user = await _utilityService.GetCurrentUser();
@@ -48,7 +48,7 @@ public class BattleController : ControllerBase
         //attack ID comes from the current authenticated user
         var attacker = await _utilityService.GetCurrentUser();
         var opponent = await _context.Users.FindAsync(opponentId);
-        if (opponent == null || opponent.isDeleted)
+        if (opponent == null || opponent.IsDeleted)
         {
             return NotFound("Opponent not available.");
         }
@@ -79,15 +79,8 @@ public class BattleController : ControllerBase
         { 
             currentRound++;
 
-            // they attack in each round alternately
-            if (currentRound % 2 != 0)
-            {
-                attackerDamageSum += FightRound(attacker, opponent, attackerArmy, opponentArmy, result);
-            }
-            else
-            {
-                opponentDamageSum += FightRound(opponent, attacker, opponentArmy, attackerArmy, result);
-            }
+            // they attack in each round respectively
+            attackerDamageSum += currentRound % 2 != 0 ? FightRound(attacker, opponent, attackerArmy, opponentArmy, result) : FightRound(opponent, attacker, opponentArmy, attackerArmy, result);
         }
 
         result.IsVictory = opponentArmy.Count == 0;
@@ -109,12 +102,7 @@ public class BattleController : ControllerBase
         var randomOpponent = opponentArmy[randomOpponentIndex];
 
         // random value from attacker and defender unit 
-        var damage = new Random().Next(randomAttacker.Unit.Attack) - new Random().Next(randomOpponent.Unit.Defense);
-
-        if (damage < 0)
-        {
-            damage = 0;
-        }
+        var damage = Math.Abs(new Random().Next(randomAttacker.Unit.Attack) - new Random().Next(randomOpponent.Unit.Defense));
 
         if (damage <= randomOpponent.HitPoints)
         {
@@ -175,16 +163,14 @@ public class BattleController : ControllerBase
 
     private void StoreBattleHistory(User attacker, User opponent, BattleResult result)
     {
-        var battle = new Battle
+        _context.Battles.Add(new Battle
         {
             Attacker = attacker,
             Opponent = opponent,
             RoundsFought = result.RoundsFought,
             WinnerDamage = result.IsVictory ? result.AttackerDamageSum : result.OpponentDamageSum,
             Winner = result.IsVictory ? attacker : opponent
-        };
-
-        _context.Battles.Add(battle);
+        });
     }
 
     private async Task UpdateUserUnitCurrentValues(User user)

@@ -18,12 +18,12 @@ public class AuthRepository : IAuthRepository
         if (user == null)
         {
             response.Success = false;
-            response.Message = "User not found.";
+            response.Message = Constants.AuthMessages.UserNotFound;
         }
         else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
         {
             response.Success = false;
-            response.Message = "Wrong password.";
+            response.Message = Constants.AuthMessages.WrongPassword;
         }
         else
         {
@@ -37,11 +37,11 @@ public class AuthRepository : IAuthRepository
     {
         if (await EmailExists(user.Email))
         {
-            return new ServiceResponse<int> { Success = false, Message = "User with that email already exists." };
+            return new ServiceResponse<int> { Success = false, Message = Constants.AuthMessages.UserExistsEmail };
         }
         if (await UsernameExists(user.Username))
         {
-            return new ServiceResponse<int> { Success = false, Message = "User with that name already exists." };
+            return new ServiceResponse<int> { Success = false, Message = Constants.AuthMessages.UserExistsUsername };
         }
 
         CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -54,13 +54,11 @@ public class AuthRepository : IAuthRepository
 
         await AddStartingUnit(user, startUnitId);
 
-        return new ServiceResponse<int> { Success = true, Data = user.Id, Message = "Registration successful." };
+        return new ServiceResponse<int> { Success = true, Data = user.Id, Message = Constants.AuthMessages.SuccessfulRegistration };
     }
 
     private async Task AddStartingUnit(User user, int startUnitId)
     {
-        //var unit = await _context.Units.FindAsync(startUnitId);
-        //var unit = await _context.Units.FirstOrDefaultAsync<Unit>(u => u.Id == startUnitId);
         var unit = await _context.Units.FindAsync(startUnitId);
         _context.UserUnits.Add(new UserUnit
         {
@@ -72,63 +70,45 @@ public class AuthRepository : IAuthRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> EmailExists(string email)
-    {
-        return await _context.Users.AnyAsync(s => s.Email.ToLower().Equals(email.ToLower()));
-    }
+    public async Task<bool> EmailExists(string email) => await _context.Users.AnyAsync(s => s.Email.ToLower().Equals(email.ToLower()));
 
-    public async Task<bool> UsernameExists(string username)
-    {
-        return await _context.Users.AnyAsync(s => s.Username.ToLower().Equals(username.ToLower()));
-    }
+    public async Task<bool> UsernameExists(string username) => await _context.Users.AnyAsync(s => s.Username.ToLower().Equals(username.ToLower()));
 
     private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
-        using (var hmac = new HMACSHA512())
-        {
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        }
+        using var hmac = new HMACSHA512();
+        passwordSalt = hmac.Key;
+        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
     }
 
     private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
     {
-        using (var hmac = new HMACSHA512(passwordSalt))
+        using var hmac = new HMACSHA512(passwordSalt);
+        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        for (int i = 0; i < computedHash.Length; i++)
         {
-            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            for(int i = 0; i < computedHash.Length; i++)
+            // check if the passwords are equal on byte level
+            if (computedHash[i] != passwordHash[i])
             {
-                // check if the passwords are equal on byte level
-                if (computedHash[i] != passwordHash[i])
-                {
-                    return false;
-                }
+                return false;
             }
-            return true;
         }
+        return true;
     }
 
     private string CreateToken(User user)
     {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username)
-        };
-
         // security key from appsettings.json
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("Appsettings:Token").Value));
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.Now.AddDays(1),
-            signingCredentials: creds); 
-
         // create string json web token
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return jwt;
+        return new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
+            claims: new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.Name, user.Username)
+                    },
+            expires: DateTime.Now.AddDays(1),
+            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("Appsettings:Token").Value)), 
+                SecurityAlgorithms.HmacSha512Signature)));
     }
 }

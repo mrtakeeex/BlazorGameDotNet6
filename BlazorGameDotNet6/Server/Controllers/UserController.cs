@@ -1,8 +1,8 @@
 ﻿namespace BlazorGameDotNet6.Server.Controllers;
 
-[Route("api/[controller]")]
+[Route(Constants.API + "/[controller]")]
 [ApiController]
-[Authorize] // only authorized users can access 
+[Authorize] 
 public class UserController : ControllerBase
 {
     private readonly DataContext _context;
@@ -14,17 +14,15 @@ public class UserController : ControllerBase
         _utilityService = utilityService;
     }
 
-    [HttpGet("getcoins")]
+    [HttpGet(Constants.ApiRoute.GetCoins)]
     public async Task<IActionResult> GetCoins()
     {
-        // find current authorized user details
         var user = await _utilityService.GetCurrentUser();
-
         return Ok(user!.Coins);
     }
 
-    [HttpPut("addcoins")]
-    public async Task<IActionResult> AddCoins([FromBody] int coins) // because its integer and not a complex type
+    [HttpPut(Constants.ApiRoute.AddCoins)]
+    public async Task<IActionResult> AddCoins([FromBody] int coins) 
     {
         var user = await _utilityService.GetCurrentUser();
         user.Coins += coins;
@@ -33,21 +31,18 @@ public class UserController : ControllerBase
         return Ok(user.Coins);
     }
 
-    //private int GetCurrentUserid() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-    //private async Task<User> GetCurrentUser() => await _context.Users.FindAsync(GetCurrentUserid());
-
-    [HttpGet("leaderboard")]
+    [HttpGet(Constants.ApiRoute.Leaderboard)]
     public async Task<IActionResult> GetLeaderboard()
     {
-        var users = await _context.Users.Where(user => !user.isDeleted && 
-                                                        user.isConfirmed)
+        var users = await _context.Users.Where(user => !user.IsDeleted && 
+                                                        user.IsConfirmed)
                                         .OrderByDescending(u => u.Victories)
                                         .ThenBy(u => u.Defeats)
                                         .ThenBy(u => u.DateCreated)
                                         .ToListAsync();
 
         var rank = 1;
-        var response = users.Select(user => new UserStatistic
+        return Ok(users.Select(user => new UserStatistic
         {
             Rank = rank++,
             UserId = user.Id,
@@ -55,8 +50,6 @@ public class UserController : ControllerBase
             Battles = user.Battles,
             Victories = user.Victories,
             Defeats = user.Defeats
-        });
-
-        return Ok(response);    
+        }));    
     }
 }

@@ -7,8 +7,8 @@ public class BattleHistoryEntry
     public int AttackerId { get; set; }
     public int OpponentId { get; set; }
     public bool HasWon { get; set; }
-    public string AttackerName { get; set; }
-    public string OpponentName { get; set; }
+    public string AttackerName { get; set; } = null!;
+    public string OpponentName { get; set; } = null!;
     public int RoundsFought { get; set; }
     public int WinnerDamageDealt { get; set; }
 }

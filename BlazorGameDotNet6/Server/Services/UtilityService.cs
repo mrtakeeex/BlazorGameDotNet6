@@ -12,9 +12,9 @@ public class UtilityService : IUtilityService
     }
     public async Task<User> GetCurrentUser()
     {
-        var userId = int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var userId = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier));
         var user = await _context.Users.FindAsync(userId);
 
-        return user;
+        return user!;
     }
 }
