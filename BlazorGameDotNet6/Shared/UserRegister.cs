@@ -11,10 +11,7 @@ public class UserRegister
     public string? Password { get; set; }
     [Compare("Password", ErrorMessage = "Passwords do not match!")]
     public string? ConfirmPassword { get; set; }
-    [Range(0, 1000, ErrorMessage = "Please choose a number between 0 and 1000!")]
-    public int Bananas { get; set; } = 100;
-    //public int StartUnitId { get; set; } = (int)UnitTypeEnum.Knight; // Knight by default
-    public string? StartUnitId { get; set; } = "1"; // Knight by default
+    public int StartUnitId { get; set; } = (int)UnitTypeEnum.Knight; // Knight by default
     public DateTime DateOfBirth { get; set; } = DateTime.Now;
     [Range(typeof(bool), "true", "true", ErrorMessage = "Only confirmed users can play!")] // Form should be only valid, if this is true! 
     public bool IsConfirmed { get; set; } = true;

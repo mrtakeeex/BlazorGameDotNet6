@@ -1,0 +1,103 @@
+﻿@page "/info"
+
+@inject IUnitService UnitService
+
+<h3>Info page</h3>
+<br />
+
+<h4>Unit types</h4>
+
+<table class="table">
+    @foreach (var unit in UnitService.Units)
+    {
+        <div class="army-list">
+                <div>
+                    @switch (unit.Id)
+                    {
+                        case (int) UnitTypeEnum.Knight:
+                            <img src="icons/W_Sword006.png" />
+                            break;
+                        case (int) UnitTypeEnum.Archer:
+                            <img src="icons/S_Bow08.png" />
+                            break;
+                        case (int) UnitTypeEnum.Mage:
+                            <img src="icons/C_Hat01.png" />
+                            break;
+                    }
+                </div>
+                <div>
+                    @unit.Title
+                </div>
+                <div>
+                    @unit.HitPoints HP
+                </div>
+                <div>
+                    @unit.Attack Attack
+                </div>
+                <div>
+                    @unit.Defense Defense
+                </div>
+                <div>
+                    <div class="form-group">
+                        <img src="icons/coins.png" /> 
+                        <span title="Coin cost"> @unit.CoinCost coins </span>
+                    </div>
+                </div>
+            </div>
+    }
+</table>
+
+<h4>Rules</h4>
+<ul>
+   <li>
+       Build army
+       <ul>
+           <li>Player can build an army from the units presented above on the <a href="build">Build page</a></li>
+           <li>Every player get's 1000 coins after registration</li>
+           <li>Player can challenge other player's hidden army on the <a href="leaderboard">Leaderboard page </a></li>
+       </ul>
+   </li>
+   <li>
+       Fight
+       <ul>
+           <li>The fighting scenario is pretty random, but not entirely! :)</li>
+           <li>On the <a href="leaderboard">Leaderboard page</a> player can fight with other user's army from the scoreboard, by clicking on the "Fight" button</li>
+           <li>Each fight happens instantly and user gets a feedback about the outcome and will be redirected to the battle log page, where player can check what happened exactly</li>
+           <li>If you attack someone's army, your units strike first!</li>
+           <li>In each round, the game picks a unit from the attacker's army and attacks a unit from the opponent's army (randomly)</li>
+           <li>After that, the opponent's unit strikes back, randomly as well</li>
+           <li>A fight ends, when one of the army is dead (no units with HP > 0)</li>
+       </ul>
+   </li>
+   <li>
+       Army revival
+       <ul>
+           <li>On the <a href="army">Army page</a>, you can revive your dead Units, if there is any</li>
+           <li>Reviving an army means, all the units gets HP randomly between 0 and their max HP</li>
+           <li>Worst case scenario is that your unit HP will be 1</li>
+           <li>The revival cost is: <bold>all the dead units (HP = 0) count original coin cost * 0.5</bold></li>
+           <li>For example, the revival of 2 dead Knights cost: 2 (dead unit count) * 100 (dead unit original price) * 0.5 = 100</li>
+       </ul>
+   </li>
+   <li>
+       Retire units
+       <ul>
+           <li>If player doesn't want to revive or play with a unit anymore, there are two options to get rid of it</li>
+           <li>If the unit is already dead (HP = 0) a little bin icon appears next to the unit, which indicates permanently deletion</li>
+           <li>Each alive units can be sold seperately by clicking on the dollar icon next to them</li>
+           <li>Selling price for a unit: <bold>HP / unit's original HP * unit's coin cost </bold> </li>
+           <li>For example selling a Mage with 50 HP is 50 / 100 * 200 = 100</li>
+       </ul>
+   </li>
+</ul>
+
+<h4>About</h4>
+
+<p>This game was implemented by Gergő Takács for learning purposes (well, mostly) </p>
+<p>You can contact me on: <a href="https://www.linkedin.com/in/takacsgergoo/">LinkedIn</a> </p>
+<p>Or just write me an email: <a href="mailto:hiregergo@gmail.com">hiregergo@gmail.com</a> </p>
+
+
+@code {
+    protected override async Task OnInitializedAsync() => await UnitService.LoadUnitsAsync();
+}

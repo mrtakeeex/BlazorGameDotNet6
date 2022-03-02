@@ -39,7 +39,7 @@ public class UnitController : ControllerBase
         dbUnit.Title = unit.Title;
         dbUnit.Attack = unit.Attack;
         dbUnit.Defense = unit.Defense;
-        dbUnit.BananaCost = unit.BananaCost;
+        dbUnit.CoinCost = unit.CoinCost;
         dbUnit.HitPoints = unit.HitPoints;
 
         await _context.SaveChangesAsync();

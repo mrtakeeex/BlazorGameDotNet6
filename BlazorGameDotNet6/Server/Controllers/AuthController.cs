@@ -32,13 +32,14 @@ public class AuthController : ControllerBase
                     {
                         Username = request.Username,
                         Email = request.Email,
-                        Bananas = request.Bananas,
+                        // starting amount
+                        Coins = 1000, 
                         DateOfBirth = request.DateOfBirth,
                         isConfirmed = request.IsConfirmed,
                         Bio = request.Bio
                     },
                     request.Password,
-                    short.Parse(request.StartUnitId));
+                    request.StartUnitId);
 
         if (!response.Success)
         {
@@ -48,24 +49,3 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 }
-
-//public class ModelStateFeatureFilter : IAsyncActionFilter
-//{
-
-//    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-//    {
-//        var state = context.ModelState;
-//        context.HttpContext.Features.Set<ModelStateFeature>(new ModelStateFeature(state));
-//        await next();
-//    }
-//}
-
-//public class ModelStateFeature
-//{
-//    public ModelStateDictionary ModelState { get; set; }
-
-//    public ModelStateFeature(ModelStateDictionary state)
-//    {
-//        ModelState = state;
-//    }
-//}

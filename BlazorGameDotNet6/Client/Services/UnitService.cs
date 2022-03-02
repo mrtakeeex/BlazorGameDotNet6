@@ -4,13 +4,13 @@ public class UnitService : IUnitService
 {
     private readonly IToastService _toastService;
     private readonly HttpClient _client;
-    private readonly IBananaService _bananaService;
+    private readonly ICoinService _coinService;
 
-    public UnitService(IToastService toastService, HttpClient client, IBananaService bananaService)
+    public UnitService(IToastService toastService, HttpClient client, ICoinService coinService)
     {
         _toastService = toastService;
         _client = client;
-        _bananaService = bananaService;
+        _coinService = coinService;
     }
 
     public IList<UserUnit> MyUnits { get; set; } = new List<UserUnit>();
@@ -28,7 +28,7 @@ public class UnitService : IUnitService
         }
         else
         {
-            await _bananaService.GetBananas();
+            await _coinService.GetCoins();
             _toastService.ShowSuccess($"Your {unit.Title} has been built!", "Unit built!");
         }
     }
@@ -60,6 +60,22 @@ public class UnitService : IUnitService
         }
 
         await LoadUserUnitsAsync();
-        await _bananaService.GetBananas();
+        await _coinService.GetCoins();
+    }
+
+    public async Task DeleteUnit(int userUnitId)
+    {
+        var result = await _client.DeleteAsync($"api/userunit/{userUnitId}");
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            _toastService.ShowSuccess(await result.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            _toastService.ShowError(await result.Content.ReadAsStringAsync());
+        }
+
+        await LoadUserUnitsAsync();
+        await _coinService.GetCoins();
     }
 }

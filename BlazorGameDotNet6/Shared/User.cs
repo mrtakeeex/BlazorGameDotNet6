@@ -8,7 +8,7 @@
         public string? Bio { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        public int Bananas { get; set; }
+        public int Coins { get; set; }
         public DateTime DateOfBirth { get; set; }
         public bool isConfirmed { get; set; }
         public bool isDeleted { get; set; }

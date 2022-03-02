@@ -34,16 +34,12 @@
         <InputTextArea id="bio" @bind-Value="user.Bio" class="form-control" />
     </div>
     <div class="form-group">
-        <label for="bananas">Bananas</label>
-        <InputNumber id="bananas" @bind-Value="user.Bananas" class="form-control" />
-        <ValidationMessage For=@(() => user.Bananas) />
-    </div>
-    <div class="form-group">
         <label for="startUnitId">Start Unit</label>
         <InputSelect id="startUnitId" @bind-Value="user.StartUnitId" class="form-control">
             @foreach(var unit in UnitService.Units)
             {
-                <option value="@unit.Id.ToString()">@unit.Title - Attack: @unit.Attack, Defense: @unit.Defense </option>
+                @*<option value="@unit.Id.ToString()">@unit.Title - Attack: @unit.Attack, Defense: @unit.Defense </option>*@
+                <option value="@unit.Id">@unit.Title - Attack: @unit.Attack, Defense: @unit.Defense </option>
             }
         </InputSelect>
         <br />

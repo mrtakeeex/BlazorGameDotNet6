@@ -1,6 +1,8 @@
 ﻿@page "/army"
 
 @inject IUnitService UnitService
+@inject IToastService ToasterService
+@inject IJSRuntime JsRuntime
 
 @attribute [Authorize]
 
@@ -8,39 +10,64 @@
 
 @if (UnitService.Units.Count > 0)
 {
-    <table class="table">
-        @foreach (var userUnit in UnitService.MyUnits)
+    @if (UnitService.MyUnits.Count > 0)
+    {
+
+    
+        <table class="table">
+            @foreach (var userUnit in UnitService.MyUnits)
+            {
+                <div class="army-list">
+                    <div>
+                        @switch (userUnit.UnitId)
+                        {
+                            case (int)UnitTypeEnum.Knight:
+                                <img src="icons/W_Sword006.png" />
+                                break;
+                            case (int)UnitTypeEnum.Archer:
+                                <img src="icons/S_Bow08.png" />
+                                break;
+                            case (int)UnitTypeEnum.Mage:
+                                <img src="icons/C_Hat01.png" />
+                                break;
+                        }
+                    </div>
+                    <div>
+                        @UnitService.Units.Single(unit => unit.Id == userUnit.UnitId).Title
+                    </div>
+                    <div>
+                        @userUnit.HitPoints HP
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <img src="icons/coins.png" /> 
+                            <span title="Value"> @userUnit.CurrentValue coins </span>
+                        </div>
+                    </div>
+                    <div>
+                        @if (userUnit.HitPoints <= 0)
+                        {
+                            <span title="Delete unit" class="oi oi-trash" style="color: red" @onclick="(() => DeleteUnit(userUnit.Id))"></span>
+                        }
+                        else
+                        {
+                            <span title="Sell unit" class="oi oi-dollar" style="color: green" @onclick="(() => DeleteUnit(userUnit.Id))"></span>
+                        }
+                    </div>
+                </div>
+            }
+        </table>
+        @if (UnitService.MyUnits.Any(u => u.HitPoints <= 0))
         {
-            <div class="army-list">
-                <div>
-                    @switch (userUnit.UnitId)
-                    {
-                        case (int) UnitTypeEnum.Knight:
-                            <img src="icons/W_Sword006.png" />
-                            break;
-                        case (int) UnitTypeEnum.Archer:
-                            <img src="icons/S_Bow08.png" />
-                            break;
-                        case (int) UnitTypeEnum.Mage:
-                            <img src="icons/C_Hat01.png" />
-                            break;
-                    }
-                </div>
-                <div>
-                    @UnitService.Units.Single(unit => unit.Id == userUnit.UnitId).Title
-                </div>
-                <div>
-                    @userUnit.HitPoints HP
-                </div>
-                <div>
-                    <button class="btn btn-danger" />
-                </div>
-            </div>
+            <center>
+                <button class="btn btn-warning" @onclick="ReviveArmy">Revive your dead units!</button>
+            </center>
         }
-    </table>
-    <center>
-        <button class="btn btn-warning" @onclick="ReviveArmy">Revive your army for 1000 bananas</button>
-    </center>
+    }
+    else
+    {
+        <p>You have no army yet. Let's build one on the <a href="build">Build page!</a></p>
+    }
 }
 else
 {
@@ -56,5 +83,15 @@ else
     private async Task ReviveArmy()
     {
         await UnitService.ReviveArmy();
+    }
+
+    private async Task DeleteUnit(int userUnitId)
+    {
+        await UnitService.DeleteUnit(userUnitId);   
+
+        //if (await JsRuntime.InvokeAsync<bool>("Confirm", "Are you sure?"))
+        //{
+            
+        //}
     }
 }

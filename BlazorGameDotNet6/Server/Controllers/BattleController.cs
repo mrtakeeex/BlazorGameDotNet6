@@ -153,19 +153,22 @@ public class BattleController : ControllerBase
             attacker.Victories++;
             opponent.Defeats++;
             
-            attacker.Bananas += opponentDamageSum;
-            opponent.Bananas += attackerDamageSum * 10; // for rebuilding the army and strike back
+            attacker.Coins += opponentDamageSum;
+            opponent.Coins += attackerDamageSum * 10; // for rebuilding the army and strike back
         }
         else
         {
             attacker.Defeats++;
             opponent.Victories++;
 
-            attacker.Bananas += opponentDamageSum * 10;
-            opponent.Bananas += attackerDamageSum;
+            attacker.Coins += opponentDamageSum * 10;
+            opponent.Coins += attackerDamageSum;
         }
 
         StoreBattleHistory(attacker, opponent, result);
+
+        await UpdateUserUnitCurrentValues(attacker);
+        await UpdateUserUnitCurrentValues(opponent);
 
         await _context.SaveChangesAsync();
     }
@@ -182,5 +185,17 @@ public class BattleController : ControllerBase
         };
 
         _context.Battles.Add(battle);
+    }
+
+    private async Task UpdateUserUnitCurrentValues(User user)
+    {
+        await _context.UserUnits.Where(u => u.UserId == user.Id).ForEachAsync(async u => u.CurrentValue = await GetCurrentValue(u));
+
+        // local method
+        async Task<int> GetCurrentValue(UserUnit userUnitId)
+        {
+            var unit = await _context.Units.FindAsync(userUnitId.UnitId);
+            return Convert.ToInt16(Convert.ToDouble(userUnitId.HitPoints) / Convert.ToDouble(unit!.HitPoints) * unit.CoinCost);
+        }
     }
 }

@@ -23,11 +23,13 @@ public class UserUnitController : ControllerBase
             .Include(unit => unit.Unit)
             .ToListAsync();
 
-        var bananaCost = 1000;
+        // Calculate revival cost
+        // Dead units revival will cost the half of their original price (because HP revives randomly)
+        var coinCost = (int) Math.Round(userUnits.Where(u => u.HitPoints <= 0).Sum(u => u.Unit.CoinCost * 0.5), MidpointRounding.AwayFromZero);
 
-        if (user.Bananas < bananaCost)
+        if (user.Coins < coinCost)
         {
-            return BadRequest($"Not enough bananas! You need {bananaCost} bananas to revive your army.");
+            return BadRequest($"Not enough coins! You need {coinCost} coins to revive your army.");
         }
 
         var armyAlreadyAlive = true;
@@ -38,7 +40,8 @@ public class UserUnitController : ControllerBase
                 armyAlreadyAlive = false;
                 
                 // revive unit with random hitpoints
-                userUnit.HitPoints = new Random().Next(0, userUnit.HitPoints); 
+                userUnit.HitPoints = new Random().Next(1, userUnit.Unit.HitPoints);
+                userUnit.CurrentValue = Convert.ToInt16(Convert.ToDouble(userUnit.HitPoints) / Convert.ToDouble(userUnit.Unit.HitPoints) * userUnit.Unit.CoinCost);
             }
         }
 
@@ -47,7 +50,7 @@ public class UserUnitController : ControllerBase
             return Ok("Your army is already alive.");
         }
 
-        user.Bananas -= bananaCost;
+        user.Coins -= coinCost;
 
         await _context.SaveChangesAsync();
 
@@ -60,18 +63,19 @@ public class UserUnitController : ControllerBase
         var unit = await _context.Units.FindAsync(unitId);
         var user = await _utilityService.GetCurrentUser();
         
-        if (user.Bananas < unit!.BananaCost)
+        if (user.Coins < unit!.CoinCost)
         {
-            return BadRequest("Not enough bananas!");
+            return BadRequest("Not enough coins!");
         }
         
-        user.Bananas -= unit.BananaCost;
+        user.Coins -= unit.CoinCost;
 
         var newUserUnit = new UserUnit
         {
             UnitId = unit.Id,
             UserId = user.Id,
-            HitPoints = unit.HitPoints
+            HitPoints = unit.HitPoints,
+            CurrentValue = unit.CoinCost
         };
 
         _context.UserUnits.Add(newUserUnit);
@@ -89,10 +93,40 @@ public class UserUnitController : ControllerBase
         var response = userUnits.Select(
             userUnit => new UserUnitResponse
             {
+                Id = userUnit.Id,
                 UnitId = userUnit.UnitId,
-                HitPoints = userUnit.HitPoints
+                HitPoints = userUnit.HitPoints,
+                CurrentValue = userUnit.CurrentValue
             });
 
         return Ok(response);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUserUnit(int id)
+    {
+        var userUnit = await _context.UserUnits.FindAsync(id);
+
+        if (userUnit == null)
+        {
+            return NotFound($"UserUnit with id {id} was not found");
+        }
+
+        var responseMsg = $"Unit was deleted successfully!";
+
+        if (userUnit.HitPoints > 0)
+        {
+            // Sell
+            var user = await _context.Users.FindAsync(userUnit.UserId);
+
+            user!.Coins += userUnit.CurrentValue;
+
+            responseMsg = $"Unit was sold for {userUnit.CurrentValue} coins!";
+        }
+        
+        _context.UserUnits.Remove(userUnit);
+        await _context.SaveChangesAsync();
+
+        return Ok(responseMsg);
     }
 }

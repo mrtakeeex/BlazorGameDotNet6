@@ -1,5 +1,5 @@
 ﻿@using BlazorGameDotNet6.Client.Services
-@inject IBananaService BananaService;
+@inject ICoinService CoinService;
 @implements IDisposable
 
 <!--only show this content to authorized users-->
@@ -7,8 +7,10 @@
     
     <Authorized>
         <div class="top-menu">
-            <img src="icons/I_C_Banana.png" /> <span> @BananaService.Bananas </span>
-            @*<AddBananas />*@ <!--Add bananas for free-->
+            <div class="form-group">
+                <img src="icons/coins.png" /> 
+                <span title="Coins"><b> @CoinService.Coins </b></span>
+            </div>
         </div>
     </Authorized>
     
@@ -24,13 +26,13 @@
 @code {
     protected override void OnInitialized()
     {
-        BananaService.OnChange += StateHasChanged; 
-        // Onchange invokes, when Bananas count changed. 
-        //Therefore we need to subscribe to that event and call StateHasChanged, which will re-render the count on the UI
+        CoinService.OnChange += StateHasChanged; 
+        // Onchange invokes, when Coins count changed. 
+        // Therefore we need to subscribe to that event and call StateHasChanged, which will re-render the count on the UI
     }
 
     public void Dispose()
     {
-        BananaService.OnChange -= StateHasChanged;
+        CoinService.OnChange -= StateHasChanged;
     }
 }

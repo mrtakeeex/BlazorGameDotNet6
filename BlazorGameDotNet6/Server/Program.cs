@@ -1,9 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
 
-//Log.Logger = new LoggerConfiguration()
-//.ReadFrom.Configuration(builder.Configuration)
-//.CreateLogger();
-
 // Add services to the container.
 
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -28,15 +24,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddScoped<IUtilityService, UtilityService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-//builder.Services.AddSingleton(Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddSerilog(dispose: true)));
-//builder.Services.AddLogging();
-
-//TODO: Remove
-//builder.Services.AddMvc(opts =>
-//{
-//    opts.Filters.Add(typeof(ModelStateFeatureFilter));
-//});
 
 var app = builder.Build();
 

@@ -14,23 +14,23 @@ public class UserController : ControllerBase
         _utilityService = utilityService;
     }
 
-    [HttpGet("getbananas")]
-    public async Task<IActionResult> GetBananas()
+    [HttpGet("getcoins")]
+    public async Task<IActionResult> GetCoins()
     {
         // find current authorized user details
         var user = await _utilityService.GetCurrentUser();
 
-        return Ok(user!.Bananas);
+        return Ok(user!.Coins);
     }
 
-    [HttpPut("addbananas")]
-    public async Task<IActionResult> AddBananas([FromBody] int bananas) // because its integer and not a complex type
+    [HttpPut("addcoins")]
+    public async Task<IActionResult> AddCoins([FromBody] int coins) // because its integer and not a complex type
     {
         var user = await _utilityService.GetCurrentUser();
-        user.Bananas += bananas;
+        user.Coins += coins;
 
         await _context.SaveChangesAsync();
-        return Ok(user.Bananas);
+        return Ok(user.Coins);
     }
 
     //private int GetCurrentUserid() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));

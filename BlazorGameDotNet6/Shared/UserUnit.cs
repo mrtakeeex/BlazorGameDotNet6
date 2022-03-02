@@ -7,4 +7,5 @@ public class UserUnit
     public Unit Unit { get; set; }
     public int UnitId { get; set; }
     public int HitPoints { get; set; }
+    public int CurrentValue { get; set; }
 }

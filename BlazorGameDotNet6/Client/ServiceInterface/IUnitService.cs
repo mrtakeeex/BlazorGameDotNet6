@@ -8,4 +8,5 @@ public interface IUnitService
     Task LoadUnitsAsync();
     Task LoadUserUnitsAsync();
     Task ReviveArmy();
+    Task DeleteUnit(int userUnitId);
 }

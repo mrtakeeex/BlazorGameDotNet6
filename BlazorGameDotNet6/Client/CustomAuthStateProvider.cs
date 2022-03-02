@@ -4,13 +4,13 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 {
     public ILocalStorageService _localStorageService;
     private readonly HttpClient _client;
-    private readonly IBananaService _bananaService;
+    private readonly ICoinService _coinService;
 
-    public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient client, IBananaService bananaService)
+    public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient client, ICoinService coinService)
     {
         _localStorageService = localStorageService;
         _client = client;
-        _bananaService = bananaService;
+        _coinService = coinService;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -29,7 +29,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 // "Bearer" - general name for that token
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken.Replace("\"", ""));
 
-                await _bananaService.GetBananas();
+                await _coinService.GetCoins();
             }
             // if the authentication is not valid anymore (e.g. timeout), set up a new one
             catch (Exception ex)

@@ -2,7 +2,7 @@
 
 @inject ILeaderboardService LeaderboardService
 @inject IBattleService BattleService
-@inject IBananaService BananaService
+@inject ICoinService CoinService
 @inject IToastService ToastService
 
 @inject AuthenticationStateProvider AuthStateProvider
@@ -61,14 +61,7 @@ else
 
     public string GetMyStyle(int userId)
     {
-        if (userId == myUserId)
-        {
-            return "color: green; font-weight: 600;";
-        }
-        else
-        {
-            return string.Empty;
-        }
+        return userId == myUserId ? "color: green; font-weight: 600;" : string.Empty;
     }
 
     public async Task StartBattle(int opponentId)
@@ -89,7 +82,7 @@ else
         }
 
         await LeaderboardService.GetLeaderboard();
-        await BananaService.GetBananas();
+        await CoinService.GetCoins();
 
         if (result.RoundsFought > 0)
         {
