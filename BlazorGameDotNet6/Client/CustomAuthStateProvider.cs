@@ -45,17 +45,20 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         NotifyAuthenticationStateChanged(Task.FromResult(state));
 
         return state;
-    }
+    }    
 
-    private byte[] ParseBase64WithoutPadding(string base64)
+    private static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
     {
-        switch (base64.Length % 4)
-        {
-            case 2: base64 += "=="; break;
-            case 3: base64 += "="; break;
-        }
-        return Convert.FromBase64String(base64);
-    }
+        return JsonSerializer.Deserialize<Dictionary<string, object>>(ParseBase64WithoutPadding(jwt.Split('.')[1])).Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
 
-    private IEnumerable<Claim> ParseClaimsFromJwt(string jwt) => JsonSerializer.Deserialize<Dictionary<string, object>>(ParseBase64WithoutPadding(jwt.Split('.')[1])).Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
+        static byte[] ParseBase64WithoutPadding(string base64)
+        {
+            switch (base64.Length % 4)
+            {
+                case 2: base64 += "=="; break;
+                case 3: base64 += "="; break;
+            }
+            return Convert.FromBase64String(base64);
+        }
+    }
 }

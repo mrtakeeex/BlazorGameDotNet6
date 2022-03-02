@@ -102,7 +102,7 @@ public class BattleController : ControllerBase
         var randomOpponent = opponentArmy[randomOpponentIndex];
 
         // random value from attacker and defender unit 
-        var damage = Math.Abs(new Random().Next(randomAttacker.Unit.Attack) - new Random().Next(randomOpponent.Unit.Defense));
+        var damage = Math.Abs(new Random().Next(1, randomAttacker.Unit.Attack) - new Random().Next(1, randomOpponent.Unit.Defense));
 
         if (damage <= randomOpponent.HitPoints)
         {

@@ -54,7 +54,7 @@ public class UserUnitController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok("Army revived!");
+        return Ok($"Your army was revived for {coinCost}!");
     }
 
     [HttpPost]

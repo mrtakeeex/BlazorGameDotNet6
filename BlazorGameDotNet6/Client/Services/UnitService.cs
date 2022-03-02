@@ -45,7 +45,7 @@ public class UnitService : IUnitService
 
     public async Task ReviveArmy()
     {
-        var result = await _client.PostAsJsonAsync<string>(Constants.ApiEndpointPath.UserUnitController_Post_Revive, null);
+        var result = await _client.PostAsJsonAsync<string>(Constants.ApiEndpointPath.UserUnitController_Post_Revive, null!);
         if (result.StatusCode == System.Net.HttpStatusCode.OK)
         {
             _toastService.ShowSuccess(await result.Content.ReadAsStringAsync());
