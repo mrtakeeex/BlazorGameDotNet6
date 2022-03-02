@@ -14,6 +14,6 @@
 @code {
     string GetClass(string round)
     {
-        return round.Contains("kills") ? "list-group-item list-group-danger" : "list-group-item";
+        return round.Contains(Constants.BattleLog.DefeatKeyword) ? Constants.BattleLog.DefeatedListGroupClass : Constants.BattleLog.GeneralListGroupClass;
     }
 }

@@ -14,13 +14,10 @@ public class UnitService : IUnitService
     }
 
     public IList<UserUnit> MyUnits { get; set; } = new List<UserUnit>();
-
     public IList<Unit> Units { get; set; } = new List<Unit>();
-
     public async Task AddUnit(int unitId)
     {
-        var unit = Units.First(unit => unit.Id == unitId);
-        var result = await _client.PostAsJsonAsync<int>("api/userunit", unitId);
+        var result = await _client.PostAsJsonAsync<int>(Constants.ApiEndpointPath.UserUnitController_Post, unitId);
         
         if (result.StatusCode != System.Net.HttpStatusCode.OK)
         {
@@ -29,27 +26,26 @@ public class UnitService : IUnitService
         else
         {
             await _coinService.GetCoins();
-            _toastService.ShowSuccess($"Your {unit.Title} has been built!", "Unit built!");
+            _toastService.ShowSuccess($"Your {Units.Single(unit => unit.Id == unitId).Title} has been built!", "Unit built!");
         }
     }
 
     public async Task LoadUnitsAsync()
     {
-        if (Units.Count == 0)
+        if (!Units.Any())
         {
-            Units = await _client.GetFromJsonAsync<IList<Unit>>("api/unit");
+            Units = await _client.GetFromJsonAsync<IList<Unit>>(Constants.ApiEndpointPath.UnitController_Get);
         }
     }
 
     public async Task LoadUserUnitsAsync()
     {
-        MyUnits = await _client.GetFromJsonAsync<IList<UserUnit>>("api/userunit");
+        MyUnits = await _client.GetFromJsonAsync<IList<UserUnit>>(Constants.ApiEndpointPath.UserUnitController_Get);
     }
 
     public async Task ReviveArmy()
     {
-        var result = await _client.PostAsJsonAsync<string>("api/userunit/revive", null);
-        
+        var result = await _client.PostAsJsonAsync<string>(Constants.ApiEndpointPath.UserUnitController_Post_Revive, null);
         if (result.StatusCode == System.Net.HttpStatusCode.OK)
         {
             _toastService.ShowSuccess(await result.Content.ReadAsStringAsync());
@@ -65,7 +61,7 @@ public class UnitService : IUnitService
 
     public async Task DeleteUnit(int userUnitId)
     {
-        var result = await _client.DeleteAsync($"api/userunit/{userUnitId}");
+        var result = await _client.DeleteAsync(string.Format(Constants.ApiEndpointPath.UserUnitController_Delete, userUnitId));
         if (result.StatusCode == System.Net.HttpStatusCode.OK)
         {
             _toastService.ShowSuccess(await result.Content.ReadAsStringAsync());

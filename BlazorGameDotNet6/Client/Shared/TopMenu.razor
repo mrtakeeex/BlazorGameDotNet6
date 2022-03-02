@@ -24,15 +24,9 @@
 </AuthorizeView>
 
 @code {
-    protected override void OnInitialized()
-    {
-        CoinService.OnChange += StateHasChanged; 
-        // Onchange invokes, when Coins count changed. 
-        // Therefore we need to subscribe to that event and call StateHasChanged, which will re-render the count on the UI
-    }
+    // Onchange invokes, when Coins count changed.
+    // Therefore we need to subscribe to that event and call StateHasChanged, which will re-render the count on the UI
+    protected override void OnInitialized() => CoinService.OnChange += StateHasChanged; 
 
-    public void Dispose()
-    {
-        CoinService.OnChange -= StateHasChanged;
-    }
+    public void Dispose() => CoinService.OnChange -= StateHasChanged;
 }

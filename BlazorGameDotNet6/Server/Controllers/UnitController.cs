@@ -11,7 +11,7 @@ public class UnitController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetUnits() // downloading shouldn't block UI thread
+    public async Task<IActionResult> GetUnits() 
     {
         var units = await _context.Units.ToListAsync();
 

@@ -61,7 +61,7 @@ else
 
     public string GetMyStyle(int userId)
     {
-        return userId == myUserId ? "color: green; font-weight: 600;" : string.Empty;
+        return userId == myUserId ? Constants.History.WinningStyle : string.Empty;
     }
 
     public async Task StartBattle(int opponentId)
@@ -70,15 +70,15 @@ else
         var result = await BattleService.StartBattle(opponentId);
         if (result.RoundsFought <= 0)
         {
-            ToastService.ShowInfo("The battle did not take place.");
+            ToastService.ShowInfo(Constants.Leaderboard.NoBattleMsg);
         }
         else if (result.IsVictory)
         {
-            ToastService.ShowSuccess("You won the battle!");
+            ToastService.ShowSuccess(Constants.Leaderboard.WinningMsg);
         }
         else
         {
-            ToastService.ShowWarning("You have been destroyed!");
+            ToastService.ShowWarning(Constants.Leaderboard.LosingMsg);
         }
 
         await LeaderboardService.GetLeaderboard();

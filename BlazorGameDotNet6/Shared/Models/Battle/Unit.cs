@@ -9,10 +9,3 @@ public class Unit
     public int HitPoints { get; set; } = 100;
     public int CoinCost { get; set; }
 }
-
-public enum UnitTypeEnum
-{
-    Knight = 1,
-    Archer = 2,
-    Mage = 3,
-}

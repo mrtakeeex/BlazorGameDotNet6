@@ -33,7 +33,7 @@ public class AuthController : ControllerBase
                         Username = request.Username,
                         Email = request.Email,
                         // starting amount
-                        Coins = 1000, 
+                        Coins = Constants.StartingCoin, 
                         DateOfBirth = request.DateOfBirth,
                         isConfirmed = request.IsConfirmed,
                         Bio = request.Bio

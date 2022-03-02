@@ -15,7 +15,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        string authToken = await _localStorageService.GetItemAsStringAsync("authToken");
+        string authToken = await _localStorageService.GetItemAsStringAsync(Constants.AuthToken);
 
         var identity = new ClaimsIdentity();
         _client.DefaultRequestHeaders.Authorization = null;
@@ -32,9 +32,9 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 await _coinService.GetCoins();
             }
             // if the authentication is not valid anymore (e.g. timeout), set up a new one
-            catch (Exception ex)
+            catch (Exception)
             {
-                await _localStorageService.RemoveItemAsync("authToken");
+                await _localStorageService.RemoveItemAsync(Constants.AuthToken);
                 identity = new ClaimsIdentity();
             }
         }
@@ -57,13 +57,5 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         return Convert.FromBase64String(base64);
     }
 
-    private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
-    {
-        var payload = jwt.Split('.')[1];
-        var jsonBytes = ParseBase64WithoutPadding(payload);
-        var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-        var claims = keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
-
-        return claims;
-    }
+    private IEnumerable<Claim> ParseClaimsFromJwt(string jwt) => JsonSerializer.Deserialize<Dictionary<string, object>>(ParseBase64WithoutPadding(jwt.Split('.')[1])).Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
 }

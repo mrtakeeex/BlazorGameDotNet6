@@ -80,7 +80,7 @@
     private async void Logout()
     {
         //remove current authentication
-        await LocalStorage.RemoveItemAsync("authToken");
+        await LocalStorage.RemoveItemAsync(Constants.AuthToken);
         //notify all the pages about state change
         await AuthStateProvider.GetAuthenticationStateAsync();
         //redirect to home page

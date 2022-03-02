@@ -1,8 +1,6 @@
 ﻿@page "/army"
 
 @inject IUnitService UnitService
-@inject IToastService ToasterService
-@inject IJSRuntime JsRuntime
 
 @attribute [Authorize]
 
@@ -11,9 +9,7 @@
 @if (UnitService.Units.Count > 0)
 {
     @if (UnitService.MyUnits.Count > 0)
-    {
-
-    
+    {    
         <table class="table">
             @foreach (var userUnit in UnitService.MyUnits)
             {
@@ -88,10 +84,5 @@ else
     private async Task DeleteUnit(int userUnitId)
     {
         await UnitService.DeleteUnit(userUnitId);   
-
-        //if (await JsRuntime.InvokeAsync<bool>("Confirm", "Are you sure?"))
-        //{
-            
-        //}
     }
 }

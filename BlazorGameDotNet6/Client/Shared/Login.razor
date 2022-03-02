@@ -30,7 +30,7 @@ Please log in below or <a href="register">register</a> for a new account.
         if (result.Success)
         {
             // new item to local storage (later token)
-            await LocalStorage.SetItemAsync<string>("authToken", result.Data);
+            await LocalStorage.SetItemAsync<string>(Constants.AuthToken, result.Data);
             // we access the auth.provider
             await AuthenticationStateProvider.GetAuthenticationStateAsync();   
         }

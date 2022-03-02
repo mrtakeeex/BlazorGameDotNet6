@@ -24,7 +24,7 @@
                 <td>@battle.OpponentName</td>
                 <td>@battle.RoundsFought</td>
                 <td>@battle.WinnerDamageDealt</td>
-                <td>@(battle.HasWon ? "You won!" : "You lost!")</td>
+                <td>@(battle.HasWon ? Constants.History.WinningMsg : Constants.History.LosingMsg)</td>
             </tr>
         }
     </tbody>
@@ -38,6 +38,6 @@
 
     string GetHistoryStyle(BattleHistoryEntry entry)
     {
-        return entry.HasWon ? "color: green; font-weight: 600;" : string.Empty;
+        return entry.HasWon ? Constants.History.WinningStyle : string.Empty;
     }
 }

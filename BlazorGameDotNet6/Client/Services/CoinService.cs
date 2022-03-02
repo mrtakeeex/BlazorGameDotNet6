@@ -8,14 +8,11 @@ public class CoinService : ICoinService
 
     public event Action OnChange;
 
-    public CoinService(HttpClient client)
-    {
-        _client = client;
-    }
+    public CoinService(HttpClient client) => _client = client;
 
     public async Task AddCoins(int amount)
     {
-        var result = await _client.PutAsJsonAsync<int>("api/user/addcoins", amount);
+        var result = await _client.PutAsJsonAsync<int>(Constants.ApiEndpointPath.UserController_Post_AddCoins, amount);
         Coins = await result.Content.ReadFromJsonAsync<int>();
         CoinsAmountChanged();
     }
@@ -31,7 +28,7 @@ public class CoinService : ICoinService
 
     public async Task GetCoins()
     {
-        Coins = await _client.GetFromJsonAsync<int>("api/user/getcoins");
+        Coins = await _client.GetFromJsonAsync<int>(Constants.ApiEndpointPath.UserController_Get_GetCoins);
         CoinsAmountChanged();
     }
 }
