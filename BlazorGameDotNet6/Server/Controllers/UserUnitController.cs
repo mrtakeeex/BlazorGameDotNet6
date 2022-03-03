@@ -63,7 +63,7 @@ public class UserUnitController : ControllerBase
         var unit = await _context.Units.FindAsync(unitId);
         var user = await _utilityService.GetCurrentUser();
         
-        if (user.Coins < unit!.CoinCost)
+        if (user.Coins < unit.CoinCost)
         {
             return BadRequest("Not enough coins!");
         }
@@ -118,7 +118,7 @@ public class UserUnitController : ControllerBase
         {
             // Sell
             var user = await _context.Users.FindAsync(userUnit.UserId);
-            user!.Coins += userUnit.CurrentValue;
+            user.Coins += userUnit.CurrentValue;
             responseMsg = $"Unit was sold for {userUnit.CurrentValue} coins!";
         }
         

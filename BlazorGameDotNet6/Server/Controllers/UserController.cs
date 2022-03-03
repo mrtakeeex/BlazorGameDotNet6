@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetCoins()
     {
         var user = await _utilityService.GetCurrentUser();
-        return Ok(user!.Coins);
+        return Ok(user.Coins);
     }
 
     [HttpPut(Constants.ApiRoute.AddCoins)]

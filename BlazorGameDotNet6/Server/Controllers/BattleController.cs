@@ -93,7 +93,7 @@ public class BattleController : ControllerBase
         }
     }
 
-    private int FightRound(User opponent, User attacker, List<UserUnit> opponentArmy, List<UserUnit> attackerArmy, BattleResult result)
+    private static int FightRound(User opponent, User attacker, List<UserUnit> opponentArmy, List<UserUnit> attackerArmy, BattleResult result)
     {
         int randomAttackerIndex = new Random().Next(attackerArmy.Count);
         int randomOpponentIndex = new Random().Next(opponentArmy.Count);
@@ -181,7 +181,7 @@ public class BattleController : ControllerBase
         async Task<int> GetCurrentValue(UserUnit userUnitId)
         {
             var unit = await _context.Units.FindAsync(userUnitId.UnitId);
-            return Convert.ToInt16(Convert.ToDouble(userUnitId.HitPoints) / Convert.ToDouble(unit!.HitPoints) * unit.CoinCost);
+            return Convert.ToInt16(Convert.ToDouble(userUnitId.HitPoints) / Convert.ToDouble(unit.HitPoints) * unit.CoinCost);
         }
     }
 }

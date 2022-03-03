@@ -62,7 +62,7 @@ public class AuthRepository : IAuthRepository
         var unit = await _context.Units.FindAsync(startUnitId);
         _context.UserUnits.Add(new UserUnit
         {
-            UnitId = unit!.Id, // 'units' table is handled by admin, therefore we can presume the record exists
+            UnitId = unit.Id, // 'units' table is handled by admin, therefore we can presume the record exists
             UserId = user.Id,
             HitPoints = unit.HitPoints,
         });
@@ -74,14 +74,14 @@ public class AuthRepository : IAuthRepository
 
     public async Task<bool> UsernameExists(string username) => await _context.Users.AnyAsync(s => s.Username.ToLower().Equals(username.ToLower()));
 
-    private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         using var hmac = new HMACSHA512();
         passwordSalt = hmac.Key;
         passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
     }
 
-    private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    private static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
     {
         using var hmac = new HMACSHA512(passwordSalt);
         var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
